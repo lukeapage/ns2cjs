@@ -1,0 +1,20 @@
+{
+  "name": "ns2cjs",
+  "version": "0.0.0",
+  "description": "Converts namespaced js files to a commonJS format",
+  "main": "src/ns2cjs.js",
+  "author": "Luke Page",
+  "license": "ISC",
+  "dependencies": {
+    "esprima": "~1.2.2"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "minimist": "~1.1.0",
+    "glob": "~4.3.2",
+    "mkdirp": "^0.5.0"
+  }
+}

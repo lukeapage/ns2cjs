@@ -1,0 +1,3 @@
+var ns2cjs = require("../src/ns2cjs");
+
+ns2cjs.convert("test/inputfiles/simple/", ".tmp/simple/");
