@@ -2,7 +2,8 @@ var esprima = require("esprima"),
     glob = require("glob"),
     fs = require("fs"),
     path = require("path"),
-    mkdirp = require("mkdirp");
+    mkdirp = require("mkdirp"),
+    Replacer = require("./replacer");
 
 var ensureDirectory = function (filepath, cb) {
     var dir = path.dirname(filepath);
@@ -21,14 +22,15 @@ module.exports = {
                     range: true,
                     comment: true
                 });
+                var outputFile = new Replacer(inputFile);
                 var outputFilePath = path.join(outputpath, subPath);
                 ensureDirectory(outputFilePath, function() {
-                    console.log("writing " + outputFilePath);
-                    fs.writeFileSync(outputFilePath, inputFile, 'utf8');
-                    processed++;
-                    if (processed === paths.length) {
-                        finished();
-                    }
+                    fs.writeFile(outputFilePath, outputFile.toString(), 'utf8', function() {
+                        processed++;
+                        if (processed === paths.length) {
+                            finished();
+                        }
+                    });
                 });
             });
         });

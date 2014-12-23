@@ -7,6 +7,8 @@ Replacer.prototype.replace = function(start, end, replacement) {
 };
 
 Replacer.prototype.toString = function() {
+    var transformed = this._input;
+    return transformed;
 };
 
 module.exports = Replacer;
