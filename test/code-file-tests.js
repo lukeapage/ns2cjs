@@ -1,11 +1,11 @@
 'use strict';
 
-var Replacer = require("../src/replacer"),
-    replacer,
+var CodeFile = require("../src/code-file"),
+    codeFile,
     text;
 
-function givenAReplacer() {
-    replacer = new Replacer(text);
+function givenACodeFile() {
+    codeFile = new CodeFile(text);
 }
 
 function withTheText(newText) {
@@ -13,12 +13,12 @@ function withTheText(newText) {
 }
 
 function thenTheOutputIs(test, assertedText) {
-    test.equal(assertedText, replacer.toString());
+    test.equal(assertedText, codeFile.toString());
 }
 
 exports.replacer = {
     untouched: function(test) {
-        givenAReplacer(withTheText("test"));
+        givenACodeFile(withTheText("test"));
         thenTheOutputIs(test, "test");
         test.done();
     }

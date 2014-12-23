@@ -3,7 +3,7 @@ var esprima = require("esprima"),
     fs = require("fs"),
     path = require("path"),
     mkdirp = require("mkdirp"),
-    Replacer = require("./replacer");
+    CodeFile = require("./code-file");
 
 var ensureDirectory = function (filepath, cb) {
     var dir = path.dirname(filepath);
@@ -22,7 +22,7 @@ module.exports = {
                     range: true,
                     comment: true
                 });
-                var outputFile = new Replacer(inputFile);
+                var outputFile = new CodeFile(inputFile);
                 var outputFilePath = path.join(outputpath, subPath);
                 ensureDirectory(outputFilePath, function() {
                     fs.writeFile(outputFilePath, outputFile.toString(), 'utf8', function() {
