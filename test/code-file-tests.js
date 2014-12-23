@@ -16,7 +16,7 @@ function thenTheOutputIs(test, assertedText) {
     test.equal(assertedText, codeFile.toString());
 }
 
-exports.replacer = {
+exports.codefile = {
     untouched: function(test) {
         givenACodeFile(withTheText("test"));
         thenTheOutputIs(test, "test");

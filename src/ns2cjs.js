@@ -3,7 +3,10 @@ var esprima = require("esprima"),
     fs = require("fs"),
     path = require("path"),
     mkdirp = require("mkdirp"),
-    CodeFile = require("./code-file");
+    CodeFile = require("./code-file"),
+    TransformInfo = require("./transform-info"),
+    Transformer = require("./transformer"),
+    transforms = require("./transforms");
 
 var ensureDirectory = function (filepath, cb) {
     var dir = path.dirname(filepath);
@@ -17,12 +20,17 @@ module.exports = {
             paths.forEach(function(filepath) {
                 var subPath = path.relative(inputpath, filepath);
                 var inputFile = fs.readFileSync(filepath, 'utf8');
-                /* var ast = */esprima.parse(inputFile, {
+                var ast = esprima.parse(inputFile, {
                     loc: true,
                     range: true,
                     comment: true
                 });
+                var transformInfo = new TransformInfo(subPath);
                 var outputFile = new CodeFile(inputFile);
+                var transformer = new Transformer(outputFile, transformInfo, transforms, ast);
+
+                transformer.run();
+
                 var outputFilePath = path.join(outputpath, subPath);
                 ensureDirectory(outputFilePath, function() {
                     fs.writeFile(outputFilePath, outputFile.toString(), 'utf8', function() {
