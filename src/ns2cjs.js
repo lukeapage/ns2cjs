@@ -5,8 +5,7 @@ var esprima = require("esprima"),
     mkdirp = require("mkdirp"),
     CodeFile = require("./code-file"),
     TransformInfo = require("./transform-info"),
-    Transformer = require("./transformer"),
-    transforms = require("./transforms");
+    Transformer = require("./transformer");
 
 var ensureDirectory = function (filepath, cb) {
     var dir = path.dirname(filepath);
@@ -27,7 +26,7 @@ module.exports = {
                 });
                 var transformInfo = new TransformInfo(subPath);
                 var outputFile = new CodeFile(inputFile);
-                var transformer = new Transformer(outputFile, transformInfo, transforms, ast);
+                var transformer = new Transformer(outputFile, transformInfo, ast);
 
                 transformer.run();
 

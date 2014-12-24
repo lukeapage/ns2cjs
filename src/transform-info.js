@@ -1,5 +1,6 @@
-function TransformInfo(subPath) {
+function TransformInfo(subPath, topLevelNamespaces) {
     this._subPath = subPath;
+    this._topLevelNamespaces = topLevelNamespaces || [];
 }
 
 TransformInfo.prototype.getFileClass = function() {
@@ -8,6 +9,10 @@ TransformInfo.prototype.getFileClass = function() {
             .replace(/(^\.)|(\.js$)/g, "");
     }
     return this._fileClass;
+};
+
+TransformInfo.prototype.getTopLevelNamespaces = function() {
+    return this._topLevelNamespaces;
 };
 
 module.exports = TransformInfo;
