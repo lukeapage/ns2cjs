@@ -44,4 +44,6 @@ exports.run = function(codeFile, transformInfo, ast) {
             fContinue(node);
         }
     });
+
+    codeFile.append("\nmodule.exports = " + className + ";");
 };

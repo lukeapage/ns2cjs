@@ -6,12 +6,12 @@
  * @alias module:ns2cjs/transform-info
  * Holds information about the proposed transformation, common to all transforms
  * @param {string} subPath
- * @param {string[]} topLevelNamespaces
+ * @param {string[]} moduleNamespaces
  * @constructor
  */
-function TransformInfo(subPath, topLevelNamespaces) {
+function TransformInfo(subPath, moduleNamespaces) {
     this._subPath = subPath;
-    this._topLevelNamespaces = topLevelNamespaces || [];
+    this._moduleNamespaces = moduleNamespaces || [];
 }
 
 TransformInfo.prototype.getFileClass = function() {
@@ -22,8 +22,8 @@ TransformInfo.prototype.getFileClass = function() {
     return this._fileClass;
 };
 
-TransformInfo.prototype.getTopLevelNamespaces = function() {
-    return this._topLevelNamespaces;
+TransformInfo.prototype.getModulesNamespaces = function() {
+    return this._moduleNamespaces;
 };
 
 module.exports = TransformInfo;

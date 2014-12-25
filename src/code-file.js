@@ -43,6 +43,14 @@ CodeFile.prototype.insert = function(start, insertion) {
 };
 
 /**
+ *
+ * @param appendage
+ */
+CodeFile.prototype.append = function(appendage) {
+    this.replace(this._input.length, this._input.length, appendage);
+};
+
+/**
  * creates the transformed code file source
  * @returns {String}
  */

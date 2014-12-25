@@ -14,3 +14,5 @@ var Comments = function() {
  */
 Comments.prototype.getInstance = function() {
 };
+
+module.exports = Comments;

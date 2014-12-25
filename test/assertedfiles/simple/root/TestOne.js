@@ -4,3 +4,5 @@
 
 var TestOne = function() {
 };
+
+module.exports = TestOne;
