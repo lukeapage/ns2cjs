@@ -31,17 +31,36 @@ function isLocal(scopes, identifier) {
     });
 }
 
-function isGlobalRequired(globals, requireName) {
+function isGlobalRegistered(globals, requireName) {
     return globals.some(function(global) {
         return global.requireName === requireName;
     });
 }
 
 /**
+ * Given a full identifier e.g. root.space.class.GLOBAL find root.space.class
+ * @param {string} fullIdentifier
+ * @param {module:ns2cjs/transformer} transformer
+ */
+function findGlobalIndentifier(fullIdentifier, transformer) {
+    var identifier;
+    [].concat(
+    transformer.getModuleClasses())
+        .concat(transformer.getLibraries())
+        .forEach(function(moduleClass) {
+            if (fullIdentifier === moduleClass || (fullIdentifier.indexOf(moduleClass+".") >= 0 && (!identifier || identifier.length < moduleClass.length))) {
+                identifier = moduleClass;
+            }
+        });
+    return identifier;
+}
+
+/**
  * Runs this transform
  * @param {module:ns2cjs/file-info} fileInfo
+ * @param {module:ns2cjs/transformer} transformer
  */
-exports.run = function(fileInfo) {
+exports.run = function(fileInfo, transformer) {
 
     var ast = fileInfo.ast,
         codeFile = fileInfo.codeFile,
@@ -54,18 +73,28 @@ exports.run = function(fileInfo) {
 
     function replaceGlobal(node) {
         var fullText = astToString(node),
-            isProperty = node.type === "MemberExpression",
             leftMostIndentifier = fullText.match(/^[^\.]+/i)[0];
 
         if (isLocal(scope, leftMostIndentifier)) {
             return;
         }
 
-        if (!isProperty) {
-            if (!isGlobalRequired(globals, fullText)) {
-                globals.push({ varName: fullText, requireName: fullText });
-            }
+        var globalIdentifier = findGlobalIndentifier(fullText, transformer);
+        if (!globalIdentifier) {
+            // warn!
             return;
+        }
+
+        //TODO is rightMostIdentifier unique?
+        var rightMostIdentifier = globalIdentifier.match(/[^\.]+$/i)[0],
+            requireName = globalIdentifier.replace(/\./g,"/");
+
+        if (!isGlobalRegistered(globals, requireName)) {
+            // todo requirename is camel case?
+            globals.push({ varName: rightMostIdentifier, requireName: requireName });
+        }
+        if (rightMostIdentifier !== globalIdentifier) {
+            codeFile.replace(node.range[0], node.range[0] + globalIdentifier.length, rightMostIdentifier);
         }
     }
 

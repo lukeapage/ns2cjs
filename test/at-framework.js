@@ -6,6 +6,33 @@ var read = function(src) {
 };
 var glob = require("glob");
 
+function stylize(str, style) {
+    var styles = {
+        'reset'     : [0,   0],
+        'bold'      : [1,  22],
+        'inverse'   : [7,  27],
+        'underline' : [4,  24],
+        'yellow'    : [33, 39],
+        'green'     : [32, 39],
+        'red'       : [31, 39],
+        'grey'      : [90, 39]
+    };
+    return '\033[' + styles[style][0] + 'm' + str +
+        '\033[' + styles[style][1] + 'm';
+}
+
+function diff(left, right) {
+    require('diff').diffLines(left.replace(/\r/g, ""), right.replace(/\r/g, "")).forEach(function(item) {
+        if(item.added || item.removed) {
+            var text = item.value.replace("\n", String.fromCharCode(182) + "\n");
+            process.stdout.write(stylize(text, item.added ? 'green' : 'red'));
+        } else {
+            process.stdout.write(item.value);
+        }
+    });
+    process.stdout.write("\n");
+}
+
 var compareFolders = function(test, assertedPath, actualPath) {
 
     var assertedPaths, actualPaths;
@@ -15,8 +42,6 @@ var compareFolders = function(test, assertedPath, actualPath) {
             var subPath = path.relative(basePathOne, pathsOne[i]);
 
             var pathTwo = path.join(basePathTwo, subPath);
-            //console.log("looking for "+path.resolve(pathTwo));
-            //console.log("found"+pathsTwo[0]);
             test.equal(true, pathsTwo.indexOf(pathTwo) >= 0);
 
             if (assertFunc) {
@@ -28,6 +53,13 @@ var compareFolders = function(test, assertedPath, actualPath) {
     function doCompare() {
         comparePathArrays(test, assertedPath, assertedPaths, actualPath, actualPaths,
             function(assertedFilePath, actualFilePath) {
+                var assertedContent = read(assertedFilePath),
+                    actualContent = read(actualFilePath);
+
+                if (assertedContent != actualContent) {
+                    console.log("");
+                    diff(assertedContent, actualContent);
+                }
                 test.equal(read(assertedFilePath), read(actualFilePath));
             });
         comparePathArrays(test, actualPath, actualPaths, assertedPath, assertedPaths);

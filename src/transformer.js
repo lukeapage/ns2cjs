@@ -35,8 +35,13 @@ Transformer.prototype.run = function() {
     }.bind(this));
 };
 
-Transformer.prototype.getModuleNamespaces = function() {
+Transformer.prototype.getModuleClasses = function() {
     return this._allClasses;
+};
+
+Transformer.prototype.getLibraries = function() {
+    //TODO!
+    return ["jQuery"];
 };
 
 module.exports = Transformer;

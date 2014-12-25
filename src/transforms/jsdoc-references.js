@@ -11,28 +11,23 @@ exports.run = function(fileInfo, transformer) {
 
     var ast = fileInfo.ast,
         codeFile = fileInfo.codeFile,
-        moduleNamespaces = transformer.getModuleNamespaces(),
+        moduleClasses = transformer.getModuleClasses(),
         namespaceChars = "a-z_-",
-        classMatcher = "[^" + namespaceChars + "]((",
+        classMatcher = "[^" + namespaceChars + "](",
         classMatcherRegexp,
         fileClass = fileInfo.getFileClass(),
         fileRootNamespace = fileClass.match(new RegExp("^[" + namespaceChars + "]+\\.", "i"))[0]
             .replace(/\.$/, "");
 
-    for(var i = 0; i < moduleNamespaces.length; i++) {
+    for(var i = 0; i < moduleClasses.length; i++) {
         if (i > 0) {
             classMatcher += "|";
         }
-        var namespaceMatch = moduleNamespaces[i];
-        if (namespaceMatch.indexOf(".") > 0) {
-            namespaceMatch = namespaceMatch.replace(/\./g, "\\.");
-        } else {
-            // top level namespace so match at least one more entry
-            namespaceMatch += "\\.[" + namespaceChars + "]+";
-        }
+        var namespaceMatch = moduleClasses[i];
+        namespaceMatch = namespaceMatch.replace(/\./g, "\\.");
         classMatcher += namespaceMatch;
     }
-    classMatcher += ")(\\.[" + namespaceChars + "]+)*)";
+    classMatcher += ")";
     classMatcherRegexp = new RegExp(classMatcher, "ig");
 
     ast.comments.forEach(function(comment) {
