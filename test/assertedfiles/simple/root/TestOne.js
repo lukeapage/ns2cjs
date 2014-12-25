@@ -2,5 +2,5 @@
  * @module root/TestOne
  */
 
-TestOne = function() {
+var TestOne = function() {
 };

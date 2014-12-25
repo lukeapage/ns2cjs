@@ -6,7 +6,7 @@
  * This is a comments class
  * @constructor
  */
-Comments = function() {
+var Comments = function() {
 };
 
 /**

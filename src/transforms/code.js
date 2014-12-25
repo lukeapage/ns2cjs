@@ -32,10 +32,12 @@ exports.run = function(codeFile, transformInfo, ast) {
             var leftSide = astToString(node.left);
             if (leftSide.indexOf(fileClass) === 0) {
                 var start = node.left.range[0];
-                /*console.log(start);
-                console.log(start + fileClass.length);
-                console.log(className);*/
-                codeFile.replace(start, start + fileClass.length, className);
+                if (leftSide === fileClass) {
+                    // constructor assignment
+                    codeFile.replace(start, start + fileClass.length, "var " + className);
+                } else {
+                    codeFile.replace(start, start + fileClass.length, className);
+                }
             }
             fContinue(node.right);
         } else {
