@@ -1,1 +1,1 @@
-module.exports = [require("./jsdoc")];
+module.exports = [require("./jsdoc"), require("./code")];

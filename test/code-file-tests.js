@@ -51,6 +51,13 @@ exports.codefile = {
         whenDeleting(1, 2);
         thenTheOutputIs(test, "tst");
         test.done();
+    },
+    insertingAndReplacingSamePlace: function(test) {
+        givenACodeFile(withTheText("test"));
+        whenReplacing(0, 1, "");
+        whenInserting(0, "w");
+        thenTheOutputIs(test, "west");
+        test.done();
     }
 
 };

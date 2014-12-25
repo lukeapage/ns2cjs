@@ -2,5 +2,5 @@
  * @module root/TestOne
  */
 
-root.TestOne = function() {
+TestOne = function() {
 };

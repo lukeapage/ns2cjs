@@ -1,3 +1,13 @@
+/**
+ * @module ns2cjs/transforms/jsdoc
+ */
+
+/**
+ * Runs this transform
+ * @param {module:ns2cjs/code-file} codeFile
+ * @param {module:ns2cjs/transform-info} transformInfo
+ * @param {object} ast
+ */
 exports.run = function(codeFile, transformInfo, ast) {
 
     var topLevelNamespaces = transformInfo.getTopLevelNamespaces().slice(0),

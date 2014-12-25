@@ -1,3 +1,14 @@
+/**
+ * @module ns2cjs/transform-info
+ */
+
+/**
+ * @alias module:ns2cjs/transform-info
+ * Holds information about the proposed transformation, common to all transforms
+ * @param {string} subPath
+ * @param {string[]} topLevelNamespaces
+ * @constructor
+ */
 function TransformInfo(subPath, topLevelNamespaces) {
     this._subPath = subPath;
     this._topLevelNamespaces = topLevelNamespaces || [];
