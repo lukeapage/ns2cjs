@@ -8,8 +8,12 @@
  * @param {object} ast
  * @param {function} visitor
  */
-function astTraverse(ast, visitor) {
-    visitor.call(null, ast, function(ast) {
+function astTraverse(entryAst, visitor) {
+    visitor.call(null, entryAst, function(ast) {
+        if (ast !== entryAst) {
+            astTraverse(ast, visitor);
+            return;
+        }
         Object.keys(ast)
             .forEach(function(key) {
                 var value = ast[key];

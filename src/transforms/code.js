@@ -10,7 +10,17 @@ function astToString(node) {
     } else if (node.type === "Identifier" ) {
         return node.name;
     }
+    console.log("to string - node not recognised");
     console.log(node);
+}
+
+function isNodeAllMemberOrIdentifier(node) {
+    if (node.type === "MemberExpression") {
+        return isNodeAllMemberOrIdentifier(node.object) && isNodeAllMemberOrIdentifier(node.property);
+    } else if (node.type === "Identifier" ) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -24,10 +34,20 @@ exports.run = function(fileInfo) {
         fileClass = fileInfo.getFileClass(),
         fileClassSplit = fileClass.split("."),
         className = fileClassSplit[fileClassSplit.length - 1],
-        inAssignment = false;
+        inFunction = 0,
+        globals = [];
+
+    function replaceGlobal(node) {
+        var fullText = astToString(node),
+            isProperty = node.type === "MemberExpression";
+
+        if (!isProperty) {
+            globals.push({ varName: fullText, requireName: fullText });
+        }
+    }
 
     astTraverse(ast, function(node, fContinue) {
-        if (node.type === "AssignmentExpression" && node.operator === "=") {
+        if (node.type === "AssignmentExpression" && node.operator === "=" && isNodeAllMemberOrIdentifier(node.left)) {
             var leftSide = astToString(node.left);
             if (leftSide.indexOf(fileClass) === 0) {
                 var start = node.left.range[0];
@@ -39,10 +59,42 @@ exports.run = function(fileInfo) {
                 }
             }
             fContinue(node.right);
-        } else {
-            fContinue(node);
+            return;
         }
+
+        if (node.type === "FunctionExpression") {
+            inFunction++;
+            // ignore params?
+            fContinue(node.body);
+            inFunction--;
+            return;
+        } else if (node.type === "MemberExpression") {
+            if (isNodeAllMemberOrIdentifier(node)) {
+                replaceGlobal(node);
+                return;
+            } else {
+                // ignore the property - its not a variable
+                fContinue(node.object);
+                return;
+            }
+        } else if (node.type === "Identifier") {
+            replaceGlobal(node);
+            return;
+        }
+        fContinue(node);
     });
+
+    if (globals.length) {
+        var globalVar = "var ";
+        for(var i = 0; i < globals.length; i++) {
+            if (i !== 0) {
+                globalVar += ",\n    ";
+            }
+            globalVar += globals[i].varName + " = require(\"" + globals[i].requireName + "\")";
+        }
+        globalVar += ";\n\n";
+        codeFile.insert(0, globalVar);
+    }
 
     codeFile.append("\nmodule.exports = " + className + ";\n");
 };

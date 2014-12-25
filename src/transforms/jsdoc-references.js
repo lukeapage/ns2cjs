@@ -47,8 +47,11 @@ exports.run = function(fileInfo, transformer) {
                 break;
             }
 
-            if (isJsDoc) {
+            if (!isJsDoc) {
                 // emit warning - class found in non js doc?
+                // might be commented out code - in which case this will mangle it.
+                // ignore for now
+                continue;
             }
             // add 1 because we can't look behind so are matching a character we don't want
             // add 2 because the comment range is the start of the comment e.g. before /*
