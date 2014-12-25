@@ -15,14 +15,13 @@ function astToString(node) {
 
 /**
  * Runs this transform
- * @param {module:ns2cjs/code-file} codeFile
- * @param {module:ns2cjs/transform-info} transformInfo
- * @param {object} ast
+ * @param {module:ns2cjs/file-info} fileInfo
  */
-exports.run = function(codeFile, transformInfo, ast) {
+exports.run = function(fileInfo) {
 
-    var topLevelNamespaces = transformInfo.getTopLevelNamespaces(),
-        fileClass = transformInfo.getFileClass(),
+    var ast = fileInfo.ast,
+        codeFile = fileInfo.codeFile,
+        fileClass = fileInfo.getFileClass(),
         fileClassSplit = fileClass.split("."),
         className = fileClassSplit[fileClassSplit.length - 1],
         inAssignment = false;
@@ -45,5 +44,5 @@ exports.run = function(codeFile, transformInfo, ast) {
         }
     });
 
-    codeFile.append("\nmodule.exports = " + className + ";");
+    codeFile.append("\nmodule.exports = " + className + ";\n");
 };

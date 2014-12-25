@@ -4,13 +4,13 @@
 
 /**
  * Runs this transform
- * @param {module:ns2cjs/code-file} codeFile
- * @param {module:ns2cjs/transform-info} transformInfo
- * @param {object} ast
+ * @param {module:ns2cjs/file-info} fileInfo
  */
-exports.run = function(codeFile, transformInfo, ast) {
+exports.run = function(fileInfo) {
 
-    var fileClass = transformInfo.getFileClass(),
+    var ast = fileInfo.ast,
+        codeFile = fileInfo.codeFile,
+        fileClass = fileInfo.getFileClass(),
         hasModuleComment = false;
 
 

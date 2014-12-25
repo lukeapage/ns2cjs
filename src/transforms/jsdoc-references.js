@@ -4,17 +4,18 @@
 
 /**
  * Runs this transform
- * @param {module:ns2cjs/code-file} codeFile
- * @param {module:ns2cjs/transform-info} transformInfo
- * @param {object} ast
+ * @param {module:ns2cjs/file-info} fileInfo
+ * @param {module:ns2cjs/transformer} transformer
  */
-exports.run = function(codeFile, transformInfo, ast) {
+exports.run = function(fileInfo, transformer) {
 
-    var moduleNamespaces = transformInfo.getModulesNamespaces(),
+    var ast = fileInfo.ast,
+        codeFile = fileInfo.codeFile,
+        moduleNamespaces = transformer.getModuleNamespaces(),
         namespaceChars = "a-z_-",
         classMatcher = "[^" + namespaceChars + "]((",
         classMatcherRegexp,
-        fileClass = transformInfo.getFileClass(),
+        fileClass = fileInfo.getFileClass(),
         fileRootNamespace = fileClass.match(new RegExp("^[" + namespaceChars + "]+\\.", "i"))[0]
             .replace(/\.$/, "");
 

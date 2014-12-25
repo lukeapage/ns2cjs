@@ -1,10 +1,8 @@
-var esprima = require("esprima"),
-    glob = require("glob"),
+var glob = require("glob"),
     fs = require("fs"),
     path = require("path"),
     mkdirp = require("mkdirp"),
-    CodeFile = require("./code-file"),
-    TransformInfo = require("./transform-info"),
+    FileInfo = require("./file-info"),
     Transformer = require("./transformer");
 
 var ensureDirectory = function (filepath, cb) {
@@ -15,31 +13,36 @@ var ensureDirectory = function (filepath, cb) {
 module.exports = {
     convert: function(inputpath, outputpath, finished) {
         glob(path.join(inputpath, "**/*.js"), function(e, paths) {
-            var processed = 0;
+            var files = [];
             paths.forEach(function(filepath) {
                 var subPath = path.relative(inputpath, filepath);
-                var inputFile = fs.readFileSync(filepath, 'utf8');
-                var ast = esprima.parse(inputFile, {
-                    loc: true,
-                    range: true,
-                    comment: true
+                fs.readFile(filepath, 'utf8', function(err, inputFile) {
+                    var fileInfo = new FileInfo(filepath, subPath, inputFile);
+                    files.push(fileInfo);
+                    if (files.length === paths.length) {
+                        // set timeout to allow filehandle to close
+                        setTimeout(onAllFilesRead.bind(null, files), 0);
+                    }
                 });
-                var transformInfo = new TransformInfo(subPath);
-                var outputFile = new CodeFile(inputFile);
-                var transformer = new Transformer(outputFile, transformInfo, ast);
+            });
+        });
 
-                transformer.run();
+        function onAllFilesRead(files) {
+            var processed = 0;
+            var transformer = new Transformer(files);
+            transformer.run();
 
-                var outputFilePath = path.join(outputpath, subPath);
+            files.forEach(function(file) {
+                var outputFilePath = path.join(outputpath, file.subPath);
                 ensureDirectory(outputFilePath, function() {
-                    fs.writeFile(outputFilePath, outputFile.toString(), 'utf8', function() {
+                    fs.writeFile(outputFilePath, file.codeFile.toString(), 'utf8', function() {
                         processed++;
-                        if (processed === paths.length) {
+                        if (processed === files.length) {
                             finished();
                         }
                     });
                 });
             });
-        });
+        }
     }
 };

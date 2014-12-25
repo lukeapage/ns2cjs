@@ -10,9 +10,9 @@ var Comments = function() {
 };
 
 /**
- * @returns {module:root/Comments}
+ * @returns {module:root/TestOne}
  */
-Comments.prototype.getInstance = function() {
+Comments.prototype.getTestOne = function() {
 };
 
 module.exports = Comments;

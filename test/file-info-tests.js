@@ -1,11 +1,11 @@
 'use strict';
 
-var TransformInfo = require("../src/transform-info"),
-    transformInfo,
+var FileInfo = require("../src/file-info"),
+    fileInfo,
     subPath;
 
-function givenATransformInfo() {
-    transformInfo = new TransformInfo(subPath);
+function givenAFileInfo() {
+    fileInfo = new FileInfo("", subPath, "");
 }
 
 function withTheSubPath(newSubPath) {
@@ -13,27 +13,27 @@ function withTheSubPath(newSubPath) {
 }
 
 function thenTheClassIs(test, assertedClass) {
-    test.equal(assertedClass, transformInfo.getFileClass());
+    test.equal(assertedClass, fileInfo.getFileClass());
 }
 
 exports.transforminfo = {
     class_unix_noleading: function(test) {
-        givenATransformInfo(withTheSubPath("root/TestOne.js"));
+        givenAFileInfo(withTheSubPath("root/TestOne.js"));
         thenTheClassIs(test, "root.TestOne");
         test.done();
     },
     class_unix_leading: function(test) {
-        givenATransformInfo(withTheSubPath("/root/TestOne.js"));
+        givenAFileInfo(withTheSubPath("/root/TestOne.js"));
         thenTheClassIs(test, "root.TestOne");
         test.done();
     },
     class_win_noleading: function(test) {
-        givenATransformInfo(withTheSubPath("root\\TestOne.js"));
+        givenAFileInfo(withTheSubPath("root\\TestOne.js"));
         thenTheClassIs(test, "root.TestOne");
         test.done();
     },
     class_win_leading: function(test) {
-        givenATransformInfo(withTheSubPath("\\root\\TestOne.js"));
+        givenAFileInfo(withTheSubPath("\\root\\TestOne.js"));
         thenTheClassIs(test, "root.TestOne");
         test.done();
     }

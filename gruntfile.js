@@ -32,4 +32,5 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', ['test']);
 
+    grunt.option("stack", true);
 };

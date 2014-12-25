@@ -6,7 +6,7 @@ root.Comments = function() {
 };
 
 /**
- * @returns {root.Comments}
+ * @returns {root.TestOne}
  */
-root.Comments.prototype.getInstance = function() {
+root.Comments.prototype.getTestOne = function() {
 };
