@@ -23,6 +23,20 @@ function isNodeAllMemberOrIdentifier(node) {
     return false;
 }
 
+function isLocal(scopes, identifier) {
+    return scopes.some(function(scope) {
+        if (scope.indexOf(identifier) >= 0) {
+            return true;
+        }
+    });
+}
+
+function isGlobalRequired(globals, requireName) {
+    return globals.some(function(global) {
+        return global.requireName === requireName;
+    });
+}
+
 /**
  * Runs this transform
  * @param {module:ns2cjs/file-info} fileInfo
@@ -35,19 +49,31 @@ exports.run = function(fileInfo) {
         fileClassSplit = fileClass.split("."),
         className = fileClassSplit[fileClassSplit.length - 1],
         inFunction = 0,
-        globals = [];
+        globals = [],
+        scope = [];
 
     function replaceGlobal(node) {
         var fullText = astToString(node),
-            isProperty = node.type === "MemberExpression";
+            isProperty = node.type === "MemberExpression",
+            leftMostIndentifier = fullText.match(/^[^\.]+/i)[0];
+
+        if (isLocal(scope, leftMostIndentifier)) {
+            return;
+        }
 
         if (!isProperty) {
-            globals.push({ varName: fullText, requireName: fullText });
+            if (!isGlobalRequired(globals, fullText)) {
+                globals.push({ varName: fullText, requireName: fullText });
+            }
+            return;
         }
     }
 
     astTraverse(ast, function(node, fContinue) {
-        if (node.type === "AssignmentExpression" && node.operator === "=" && isNodeAllMemberOrIdentifier(node.left)) {
+        if (node.type === "AssignmentExpression" && node.operator === "=" &&
+            inFunction === 0 &&
+            isNodeAllMemberOrIdentifier(node.left)) {
+
             var leftSide = astToString(node.left);
             if (leftSide.indexOf(fileClass) === 0) {
                 var start = node.left.range[0];
@@ -64,8 +90,15 @@ exports.run = function(fileInfo) {
 
         if (node.type === "FunctionExpression") {
             inFunction++;
-            // ignore params?
+            scope.push([]);
+            node.params.forEach(function(param) {
+                if (typeof param.name !== "string") {
+                    throw new Error("unrecognised parameter format");
+                }
+                scope[scope.length - 1].push(param.name);
+            });
             fContinue(node.body);
+            scope.pop();
             inFunction--;
             return;
         } else if (node.type === "MemberExpression") {
