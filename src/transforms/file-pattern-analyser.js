@@ -27,33 +27,49 @@ exports.run = function(fileInfo, transformer) {
             inFunction === 0) {
 
             if (!astHelper.isNodeAllMemberOrIdentifier(node.left)) {
-                // warn
+                transformer.warn(fileInfo, "non simple assignment in root scope", node.range[0]);
             } else {
-                var leftSide = astHelper.astToString(node.left),
-                    currentAssignment = declaredFunc || fileClass;
-                if (leftSide.indexOf(currentAssignment) === 0) {
-                    if (leftSide === currentAssignment) {
+                var leftSide = astHelper.astToString(node.left);
+                if (leftSide.indexOf(fileClass) === 0) {
+                    if (leftSide === fileClass) {
                         if (declaredFunc) {
-                            // warn
+                            //TODO check if right hand side is delcaredFunc
+                            transformer.warn(fileInfo, "Overwriting class definition. not with named function", node.range[0]);
                         }
                         if (fullNSAssignment) {
                             // could be singleton
+                            //TODO
                             if (node.right.type = "NewThingy") {
 
                             }else {
-                                // warn
+                                console.dir(node.right);
+                                transformer.warn(fileInfo, "Multiple assignment to class", node.range[0]);
                             }
                         }
                         fullNSAssignment = true;
                     } else {
-                        if (leftSide.indexOf(currentAssignment + ".prototype")) {
+                        if (declaredFunc) {
+                            transformer.warn(fileInfo, "Assignment to class sub when declared function exists", node.range[0]);
+                        }
+                        if (leftSide.indexOf(fileClass + ".prototype")) {
+                            assignmentToPrototype = true;
+                        } else {
+                            assignmentToFunc = true;
+                        }
+                    }
+                } else if (leftSide.indexOf(declaredFunc) === 0) {
+                    if (leftSide === declaredFunc) {
+                        //TODO check if right hand side is delcaredFunc
+                        transformer.warn(fileInfo, "Overwriting a declared function", node.range[0]);
+                    } else {
+                        if (leftSide.indexOf(declaredFunc + ".prototype")) {
                             assignmentToPrototype = true;
                         } else {
                             assignmentToFunc = true;
                         }
                     }
                 } else {
-                    // warn
+                    transformer.warn(fileInfo, "Unrecognised assignment", node.range[0]);
                 }
                 fContinue(node.right);
                 return;
@@ -61,9 +77,11 @@ exports.run = function(fileInfo, transformer) {
         }
 
         if (node.type === "FunctionExpression" || node.type === "FunctionDeclaration") {
-            if (node.type === "FunctionDeclaration" && node.id) {
+            if (node.type === "FunctionDeclaration" && node.id && inFunction === 0) {
                 if (declaredFunc) {
-                    // warn multiple declared functions - ignoring
+                    transformer.warn(fileInfo, "Multiple declared functions - ignoring", node.range[0]);
+                } else if (fullNSAssignment) {
+                    transformer.warn(fileInfo, "Declared function after class assignment - ignoring", node.range[0]);
                 } else {
                     declaredFunc = node.id.name;
                 }
@@ -75,6 +93,10 @@ exports.run = function(fileInfo, transformer) {
         }
         fContinue(node);
     });
+
+    if (!fullNSAssignment) {
+        transformer.warn(fileInfo, "class never assigned in file", 0);
+    }
 
     return {};
 };

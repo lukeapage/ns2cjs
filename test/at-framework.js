@@ -89,6 +89,7 @@ function compareMessages(test, expected, actual) {
             msg = expectedMsg.match(/:(.+)/)[1];
         for(var i = actual.length -1; i >= 0; i--) {
             if (actual[i].fileInfo.subPath === filename && actual[i].msg === msg) {
+                test.equals(actual[i].msg, msg); //so we increase the assertions with each new test
                 actual.splice(i, 1);
                 return;
             }

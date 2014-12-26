@@ -1,0 +1,2 @@
+root.ClassAlreadyHasName = function named() {
+};
