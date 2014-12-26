@@ -2,7 +2,7 @@
  * @module root/TestOne
  */
 
-var TestOne = function() {
-};
+function TestOne() {
+}
 
 module.exports = TestOne;

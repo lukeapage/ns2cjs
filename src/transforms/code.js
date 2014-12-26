@@ -108,7 +108,18 @@ exports.run = function(fileInfo, transformer) {
                 var start = node.left.range[0];
                 if (leftSide === fileClass) {
                     // constructor assignment
-                    codeFile.replace(start, start + fileClass.length, "var " + className);
+                    if (node.right.id) {
+                        // warn node.right.id.name - function already named
+                    }
+                    codeFile.delete(start, node.right.range[0]);
+                    codeFile.insert(node.right.range[0] + "function".length, " " + className);
+
+                    var lastCharPosition = node.right.range[1];
+                    if (codeFile.charAt(lastCharPosition) === ";") {
+                        codeFile.delete(lastCharPosition, lastCharPosition + 1);
+                    } else {
+                        // info - was missing semi-colon
+                    }
                 } else {
                     codeFile.replace(start, start + fileClass.length, className);
                 }

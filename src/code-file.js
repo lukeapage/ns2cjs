@@ -51,6 +51,14 @@ CodeFile.prototype.append = function(appendage) {
 };
 
 /**
+ * Gets the char at in the original file
+ * @param index
+ */
+CodeFile.prototype.charAt = function(index) {
+    return this._input.charAt(index);
+};
+
+/**
  * creates the transformed code file source
  * @returns {String}
  */

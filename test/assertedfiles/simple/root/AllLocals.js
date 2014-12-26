@@ -2,7 +2,7 @@
  * @module root/AllLocals
  */
 
-var AllLocals = function() {
+function AllLocals() {
     var jQuery;
     function func(root) {
         root.Comments.test();
@@ -10,6 +10,6 @@ var AllLocals = function() {
         var test = jQuery.access();
     };
     func();
-};
+}
 
 module.exports = AllLocals;

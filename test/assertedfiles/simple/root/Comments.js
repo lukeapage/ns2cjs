@@ -6,8 +6,8 @@
  * This is a comments class
  * @constructor
  */
-var Comments = function() {
-};
+function Comments() {
+}
 
 /**
  * @param {root.nsType} nsType A parameter defined elsewhere and not yet converted to module syntax
