@@ -1,4 +1,5 @@
-root.Singleton = function() {
+;
+exports.staticFunc = function() {
 };
-root.Singleton = new root.Singleton();
+;
 

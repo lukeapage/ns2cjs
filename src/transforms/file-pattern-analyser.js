@@ -24,7 +24,8 @@ exports.run = function(fileInfo, transformer) {
         singletonAssignmentNode,
         hasModuleExports,
         hasExports,
-        constructorNode;
+        constructorNode,
+        constructorAssignment;
 
     astTraverse(ast, function(node, fContinue) {
         if (node.type === "AssignmentExpression" && node.operator === "=" &&
@@ -62,13 +63,14 @@ exports.run = function(fileInfo, transformer) {
                             }
                         } else {
                             constructorNode = node.right;
+                            constructorAssignment = node;
                             fullNSAssignment = true;
                         }
                     } else {
                         if (declaredFunc) {
                             transformer.warn(fileInfo, "Assignment to class sub when declared function exists", node.range[0]);
                         }
-                        if (leftSide.indexOf(fileClass + ".prototype")) {
+                        if (leftSide.indexOf(fileClass + ".prototype") >= 0) {
                             assignmentToPrototype = true;
                         } else {
                             assignmentToFunc = true;
@@ -129,6 +131,7 @@ exports.run = function(fileInfo, transformer) {
         jsDoc = require("./jsdoc"),
         jsDocReferences = require("./jsdoc-references"),
         nstocjs = require("./nstocjs"),
+        nsStatic = require("./ns-static"),
         transforms = [findGlobals, jsDocReferences],
         patternInfo = {
             transforms: transforms
@@ -140,8 +143,17 @@ exports.run = function(fileInfo, transformer) {
         } else if (constructorNode.body.length > 0) {
             transformer.warn(fileInfo, "singleton assignment but constructor body has content", 0);
         }
+        if (declaredFunc) {
+            transformer.warn(fileInfo, "declared function not supported with singleton", 0);
+        }
+        if (assignmentToFunc) {
+            transformer.warn(fileInfo, "unsupported assignment to non prototype with singleton", 0);
+        } else if (!assignmentToPrototype) {
+            transformer.warn(fileInfo, "empty singleton - no assignments to prototype", 0);
+        }
         patternInfo.singletonAssignmentNode = singletonAssignmentNode;
-        patternInfo.constructorNode = constructorNode;
+        patternInfo.constructorNode = constructorAssignment || constructorNode;
+        transforms.splice(0, 0, nsStatic);
     } else {
         transforms.splice(0, 0, nstocjs, jsDoc);
     }
