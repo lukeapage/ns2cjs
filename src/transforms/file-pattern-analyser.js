@@ -25,9 +25,13 @@ exports.run = function(fileInfo, transformer) {
         hasModuleExports,
         hasExports,
         constructorNode,
-        constructorAssignment;
+        constructorAssignment,
+        parentNode,
+        currentNode;
 
     astTraverse(ast, function(node, fContinue) {
+        parentNode = currentNode;
+        currentNode = node;
         if (node.type === "AssignmentExpression" && node.operator === "=" &&
             inFunction === 0) {
 
@@ -56,14 +60,14 @@ exports.run = function(fileInfo, transformer) {
                                 if (singletonAssignmentNode) {
                                     transformer.warn(fileInfo, "Multiple singleton assignment", node.range[0]);
                                 }
-                                singletonAssignmentNode = node;
+                                singletonAssignmentNode = parentNode;
 
                             }else {
                                 transformer.warn(fileInfo, "Multiple assignment to class", node.range[0]);
                             }
                         } else {
                             constructorNode = node.right;
-                            constructorAssignment = node;
+                            constructorAssignment = parentNode;
                             fullNSAssignment = true;
                         }
                     } else {
