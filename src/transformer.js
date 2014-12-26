@@ -18,8 +18,8 @@ function Transformer(files) {
 }
 
 Transformer.prototype.run = function() {
-    var transforms = require("./transforms"),
-        filePatternAnalyser = require("./transforms/file-pattern-analyser");
+    var filePatternAnalyser = require("./transforms/file-pattern-analyser"),
+        transformer = this;
 
     this._files.forEach(function(file) {
         file.ast = esprima.parse(file.contents, {
@@ -27,15 +27,16 @@ Transformer.prototype.run = function() {
             comment: true
         });
         file.codeFile = new CodeFile(file.contents);
-        this._allClasses.push(file.getFileClass());
-        file.pattern = filePatternAnalyser.run(file, this);
-    }.bind(this));
+        transformer._allClasses.push(file.getFileClass());
+        file.pattern = filePatternAnalyser.run(file, transformer);
+    });
 
     this._files.forEach(function(file) {
-        for(var i = 0; i < transforms.length; i++) {
-            transforms[i].run(file, this);
-        }
-    }.bind(this));
+        file.pattern.transforms.forEach(
+            function(transform) {
+                transform.run(file, transformer);
+            });
+    });
 };
 
 Transformer.prototype.getModuleClasses = function() {

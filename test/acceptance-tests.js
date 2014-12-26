@@ -19,7 +19,11 @@ exports.ats = {
             "root\\MultipleDeclared.js:class never assigned in file",
             "root\\DeclaredAfterClass.js:Declared function after class assignment - ignoring",
             "root\\ClassAlreadyHasName.js:Function already named (named), not changing to ClassAlreadyHasName",
-            "root\\UnrecognisedAssignment.js:Unrecognised assignment"
+            "root\\UnrecognisedAssignment.js:Unrecognised assignment",
+            "root\\OverwritingDeclared.js:Overwriting a declared function",
+            "root\\OverwritingClassNotDeclared.js:Overwriting class definition. not with named function",
+            "root\\OverwritingClassNotDeclared.js:Global identifier found with no matching module or library - OverwritingClassNotDeclared",
+            "root\\MultipleAssignment.js:Multiple assignment to class"
         ]);
     }
 };

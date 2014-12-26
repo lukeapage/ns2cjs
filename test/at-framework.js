@@ -110,7 +110,7 @@ module.exports = {
         ns2cjs.convert(pathToProcess, outputPath, function(logMessages) {
             test.equals(0, logHelper.errors(logMessages).length, "No errors");
             compareMessages(test, expectedWarnings || [], logHelper.warnings(logMessages));
-            if (fs.exists(pathToAssert)) {
+            if (fs.existsSync(pathToAssert)) {
                 compareFolders(test, pathToAssert, outputPath);
             } else {
                 test.done();

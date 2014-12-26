@@ -82,6 +82,9 @@ exports.run = function(fileInfo, transformer) {
     }
 
     astTraverse(ast, function(node, fContinue) {
+        if (node === fileInfo.pattern.singletonAssignmentNode) {
+            return; // skip node
+        }
         if (node.type === "AssignmentExpression" && node.operator === "=" &&
             inFunction === 0 &&
             astHelper.isNodeAllMemberOrIdentifier(node.left)) {
