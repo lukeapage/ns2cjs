@@ -18,13 +18,14 @@ exports.run = function(fileInfo, transformer) {
     ast.comments.forEach(function(comment) {
         var isJsDoc = comment.value.match(/^\*/),
             isConstructor = comment.value.match(/@constructor/),
+            multipleModuleComments = comment.value.match(/@module\s/g),
             moduleComment = comment.value.match(/@module\s+([^\s\n]+)?/);
 
         if (moduleComment) {
             if (!isJsDoc) {
                 transformer.warn(fileInfo, "module comment found in non-jsdoc", comment.range[0]);
             }
-            if (hasModuleComment) {
+            if (hasModuleComment || multipleModuleComments.length > 1) {
                 transformer.warn(fileInfo, "Multiple module comments found in file to convert", comment.range[0]);
             }
             if (!moduleComment[1]) {

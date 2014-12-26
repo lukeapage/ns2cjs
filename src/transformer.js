@@ -58,6 +58,9 @@ Transformer.prototype.error = function(fileInfo, msg, loc) {
 };
 
 Transformer.prototype.log = function(type, fileInfo, msg, loc) {
+    if (!fileInfo) {
+        throw new Error("log message missing file info");
+    }
     this._log.push({
         type: type,
         fileInfo: fileInfo,

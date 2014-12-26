@@ -1,4 +1,5 @@
 var path = require('path');
+var fs = require('fs');
 var ns2cjs = require('../src/ns2cjs');
 var grunt = require('grunt');
 var read = function(src) {
@@ -84,10 +85,10 @@ var compareFolders = function(test, assertedPath, actualPath) {
 function compareMessages(test, expected, actual) {
     actual = actual.slice(0);
     expected.forEach(function(expectedMsg) {
-        var filename = expectedMsg.split(":")[0],
-            msg = expectedMsg.split(":")[1];
-        for(var i = actual.length -1; i--; i >= 0) {
-            if (actual.fileInfo.subPath === filename && actual.msg === msg) {
+        var filename = expectedMsg.match(/^[^:]+/)[0],
+            msg = expectedMsg.match(/:(.+)/)[1];
+        for(var i = actual.length -1; i >= 0; i--) {
+            if (actual[i].fileInfo.subPath === filename && actual[i].msg === msg) {
                 actual.splice(i, 1);
                 return;
             }
@@ -108,7 +109,11 @@ module.exports = {
         ns2cjs.convert(pathToProcess, outputPath, function(logMessages) {
             test.equals(0, logHelper.errors(logMessages).length, "No errors");
             compareMessages(test, expectedWarnings || [], logHelper.warnings(logMessages));
-            compareFolders(test, pathToAssert, outputPath);
+            if (fs.exists(pathToAssert)) {
+                compareFolders(test, pathToAssert, outputPath);
+            } else {
+                test.done();
+            }
         });
     }
 };
