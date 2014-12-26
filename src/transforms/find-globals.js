@@ -48,7 +48,9 @@ exports.run = function(fileInfo, transformer) {
         codeFile = fileInfo.codeFile,
         inFunction = 0,
         globals = [],
-        scope = [[]];
+        scope = [[]],
+        firstFunctionHit = false,
+        globalVarDeclarationContinuePosition;
 
     function replaceGlobal(node) {
         var fullText = astHelper.astToString(node),
@@ -82,6 +84,7 @@ exports.run = function(fileInfo, transformer) {
             inFunction === 0 &&
             astHelper.isNodeAllMemberOrIdentifier(node.left)) {
 
+            firstFunctionHit = true;
             fContinue(node.right);
             return;
         }
@@ -117,19 +120,32 @@ exports.run = function(fileInfo, transformer) {
                 fContinue(node.init);
             }
             return;
+        } else if (node.type === "VariableDeclaration" && inFunction === 0) {
+            fContinue(node);
+            if (!firstFunctionHit) {
+                globalVarDeclarationContinuePosition = node.range[1] - 1;
+            }
+            return;
         }
         fContinue(node);
     });
 
     if (globals.length) {
-        var globalVar = "var ";
+        var globalVar;
+        if (globalVarDeclarationContinuePosition) {
+            globalVar = ",\n    ";
+        } else {
+            globalVar = "var ";
+        }
         for(var i = 0; i < globals.length; i++) {
             if (i !== 0) {
                 globalVar += ",\n    ";
             }
             globalVar += globals[i].varName + " = require(\"" + globals[i].requireName + "\")";
         }
-        globalVar += ";\n\n";
-        codeFile.insert(0, globalVar);
+        if (!globalVarDeclarationContinuePosition) {
+            globalVar += ";\n\n";
+        }
+        codeFile.insert(globalVarDeclarationContinuePosition || 0, globalVar);
     }
 };
