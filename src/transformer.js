@@ -18,7 +18,8 @@ function Transformer(files) {
 }
 
 Transformer.prototype.run = function() {
-    var transforms = require("./transforms");
+    var transforms = require("./transforms"),
+        filePatternAnalyser = require("./transforms/file-pattern-analyser");
 
     this._files.forEach(function(file) {
         file.ast = esprima.parse(file.contents, {
@@ -27,6 +28,7 @@ Transformer.prototype.run = function() {
         });
         file.codeFile = new CodeFile(file.contents);
         this._allClasses.push(file.getFileClass());
+        file.pattern = filePatternAnalyser.run(file, this);
     }.bind(this));
 
     this._files.forEach(function(file) {

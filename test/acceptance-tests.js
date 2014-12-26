@@ -13,7 +13,8 @@ exports.ats = {
             "root\\IncorrectModuleDeclaration3.js:module comment does not match expected - root/ncorrectModuleDeclaration3 != root/IncorrectModuleDeclaration3",
             "root\\IncorrectModuleDeclaration3.js:module comment does not match expected - root/ncorrectModuleDeclaration3 != root/IncorrectModuleDeclaration3",
             "root\\IncorrectModuleDeclaration3.js:Multiple module comments found in file to convert",
-            "root\\IncorrectModuleDeclaration3.js:Multiple module comments found in file to convert"
+            "root\\IncorrectModuleDeclaration3.js:Multiple module comments found in file to convert",
+            "root\\GlobalIdNotFound.js:Global identifier found with no matching module or library - _.underscore"
         ]);
     }
 };
