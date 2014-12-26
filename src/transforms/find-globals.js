@@ -2,26 +2,8 @@
  * @module ns2cjs/transforms/code
  */
 
-var astTraverse = require("../ast-traverse");
-
-function astToString(node) {
-    if (node.type === "MemberExpression") {
-        return astToString(node.object) + "." + astToString(node.property);
-    } else if (node.type === "Identifier" ) {
-        return node.name;
-    }
-    console.log("to string - node not recognised");
-    console.log(node);
-}
-
-function isNodeAllMemberOrIdentifier(node) {
-    if (node.type === "MemberExpression") {
-        return isNodeAllMemberOrIdentifier(node.object) && isNodeAllMemberOrIdentifier(node.property);
-    } else if (node.type === "Identifier" ) {
-        return true;
-    }
-    return false;
-}
+var astTraverse = require("../ast-traverse"),
+    astHelper = require("../ast-helper");
 
 function isLocal(scopes, identifier) {
     return scopes.some(function(scope) {
@@ -64,15 +46,12 @@ exports.run = function(fileInfo, transformer) {
 
     var ast = fileInfo.ast,
         codeFile = fileInfo.codeFile,
-        fileClass = fileInfo.getFileClass(),
-        fileClassSplit = fileClass.split("."),
-        className = fileClassSplit[fileClassSplit.length - 1],
         inFunction = 0,
         globals = [],
-        scope = [];
+        scope = [[]];
 
     function replaceGlobal(node) {
-        var fullText = astToString(node),
+        var fullText = astHelper.astToString(node),
             leftMostIndentifier = fullText.match(/^[^\.]+/i)[0];
 
         if (isLocal(scope, leftMostIndentifier)) {
@@ -101,29 +80,8 @@ exports.run = function(fileInfo, transformer) {
     astTraverse(ast, function(node, fContinue) {
         if (node.type === "AssignmentExpression" && node.operator === "=" &&
             inFunction === 0 &&
-            isNodeAllMemberOrIdentifier(node.left)) {
+            astHelper.isNodeAllMemberOrIdentifier(node.left)) {
 
-            var leftSide = astToString(node.left);
-            if (leftSide.indexOf(fileClass) === 0) {
-                var start = node.left.range[0];
-                if (leftSide === fileClass) {
-                    // constructor assignment
-                    if (node.right.id) {
-                        // warn node.right.id.name - function already named
-                    }
-                    codeFile.delete(start, node.right.range[0]);
-                    codeFile.insert(node.right.range[0] + "function".length, " " + className);
-
-                    var lastCharPosition = node.right.range[1];
-                    if (codeFile.charAt(lastCharPosition) === ";") {
-                        codeFile.delete(lastCharPosition, lastCharPosition + 1);
-                    } else {
-                        // info - was missing semi-colon
-                    }
-                } else {
-                    codeFile.replace(start, start + fileClass.length, className);
-                }
-            }
             fContinue(node.right);
             return;
         }
@@ -142,7 +100,7 @@ exports.run = function(fileInfo, transformer) {
             inFunction--;
             return;
         } else if (node.type === "MemberExpression") {
-            if (isNodeAllMemberOrIdentifier(node)) {
+            if (astHelper.isNodeAllMemberOrIdentifier(node)) {
                 replaceGlobal(node);
                 return;
             } else {
@@ -174,6 +132,4 @@ exports.run = function(fileInfo, transformer) {
         globalVar += ";\n\n";
         codeFile.insert(0, globalVar);
     }
-
-    codeFile.append("\nmodule.exports = " + className + ";\n");
 };

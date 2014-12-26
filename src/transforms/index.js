@@ -1,1 +1,1 @@
-module.exports = [require("./jsdoc"), require("./code"), require("./jsdoc-references")];
+module.exports = [require("./jsdoc"), require("./find-globals"), require("./nstocjs"), require("./jsdoc-references")];
