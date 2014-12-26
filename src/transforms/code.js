@@ -117,7 +117,7 @@ exports.run = function(fileInfo, transformer) {
             return;
         }
 
-        if (node.type === "FunctionExpression") {
+        if (node.type === "FunctionExpression" || node.type === "FunctionDeclaration") {
             inFunction++;
             scope.push([]);
             node.params.forEach(function(param) {
@@ -141,6 +141,12 @@ exports.run = function(fileInfo, transformer) {
             }
         } else if (node.type === "Identifier") {
             replaceGlobal(node);
+            return;
+        } else if (node.type === "VariableDeclarator") {
+            scope[scope.length - 1].push(node.id.name);
+            if (node.init) {
+                fContinue(node.init);
+            }
             return;
         }
         fContinue(node);
