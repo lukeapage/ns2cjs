@@ -29,11 +29,13 @@ exports.run = function(fileInfo, transformer) {
                 var start = node.left.range[0];
                 if (leftSide === fileClass) {
                     // constructor assignment
-                    if (node.right.id) {
-                        // warn node.right.id.name - function already named
-                    }
                     codeFile.delete(start, node.right.range[0]);
-                    codeFile.insert(node.right.range[0] + "function".length, " " + className);
+
+                    if (node.right.id) {
+                        transformer.warn(fileInfo, "Function already named (" + node.right.id.name +"), not changing to " + className, node.right.range[0]);
+                    } else {
+                        codeFile.insert(node.right.range[0] + "function".length, " " + className);
+                    }
 
                     var lastCharPosition = node.right.range[1];
                     if (codeFile.charAt(lastCharPosition) === ";") {

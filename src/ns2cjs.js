@@ -38,7 +38,7 @@ module.exports = {
                     fs.writeFile(outputFilePath, file.codeFile.toString(), 'utf8', function() {
                         processed++;
                         if (processed === files.length) {
-                            finished();
+                            finished(transformer.getLog());
                         }
                     });
                 });

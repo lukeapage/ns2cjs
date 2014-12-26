@@ -14,6 +14,7 @@ var esprima = require("esprima"),
 function Transformer(files) {
     this._files = files;
     this._allClasses = [];
+    this._log = [];
 }
 
 Transformer.prototype.run = function() {
@@ -42,6 +43,31 @@ Transformer.prototype.getModuleClasses = function() {
 Transformer.prototype.getLibraries = function() {
     //TODO!
     return ["jQuery"];
+};
+
+Transformer.prototype.info = function(fileInfo, msg, loc) {
+    this.log("info", fileInfo, msg, loc);
+};
+
+Transformer.prototype.warn = function(fileInfo, msg, loc) {
+    this.log("warning", fileInfo, msg, loc);
+};
+
+Transformer.prototype.error = function(fileInfo, msg, loc) {
+    this.log("error", fileInfo, msg, loc);
+};
+
+Transformer.prototype.log = function(type, fileInfo, msg, loc) {
+    this._log.push({
+        type: type,
+        fileInfo: fileInfo,
+        msg: msg,
+        loc: loc
+    });
+};
+
+Transformer.prototype.getLog = function() {
+    return this._log;
 };
 
 module.exports = Transformer;

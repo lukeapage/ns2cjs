@@ -6,28 +6,41 @@
  * Runs this transform
  * @param {module:ns2cjs/file-info} fileInfo
  */
-exports.run = function(fileInfo) {
+exports.run = function(fileInfo, transformer) {
 
     var ast = fileInfo.ast,
         codeFile = fileInfo.codeFile,
         fileClass = fileInfo.getFileClass(),
-        hasModuleComment = false;
+        hasModuleComment = false,
+        moduleIdentifier = fileClass.replace(".", "/");
 
 
     ast.comments.forEach(function(comment) {
-        // comment.value
-        // comment.range[]
         var isJsDoc = comment.value.match(/^\*/),
-            isConstructor = comment.value.match(/@constructor/);
+            isConstructor = comment.value.match(/@constructor/),
+            moduleComment = comment.value.match(/@module\s+([^\s\n]+)?/);
 
-        if (isJsDoc && comment.value.match(/@module/)) {
+        if (moduleComment) {
+            if (!isJsDoc) {
+                transformer.warn(fileInfo, "module comment found in non-jsdoc", comment.range[0]);
+            }
+            if (hasModuleComment) {
+                transformer.warn(fileInfo, "Multiple module comments found in file to convert", comment.range[0]);
+            }
+            if (!moduleComment[1]) {
+                transformer.warn(fileInfo, "module comment found with non understandable identifier", comment.range[0]);
+            } else {
+                if (moduleComment[1] !== moduleIdentifier) {
+                    transformer.warn(fileInfo,
+                        "module comment does not match expected - " + moduleComment[1] + " != " + moduleIdentifier,
+                        comment.range[0]);
+                }
+            }
             hasModuleComment = true;
         }
     });
 
-    if (hasModuleComment) {
-        // emit warning
-    } else {
-        codeFile.insert(0, "/**\n * @module " + fileClass.replace(".", "/") + "\n */\n\n");
+    if (!hasModuleComment) {
+        codeFile.insert(0, "/**\n * @module " + moduleIdentifier + "\n */\n\n");
     }
 };

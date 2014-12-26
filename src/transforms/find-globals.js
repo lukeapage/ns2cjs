@@ -6,6 +6,9 @@ var astTraverse = require("../ast-traverse"),
     astHelper = require("../ast-helper");
 
 function isLocal(scopes, identifier) {
+    if (identifier === "require") {
+        return true;
+    }
     return scopes.some(function(scope) {
         if (scope.indexOf(identifier) >= 0) {
             return true;
@@ -62,7 +65,7 @@ exports.run = function(fileInfo, transformer) {
 
         var globalIdentifier = findGlobalIndentifier(fullText, transformer);
         if (!globalIdentifier) {
-            // warn!
+            transformer.warn(fileInfo, "Global identifier found with no matching module or library - " + fullText, node.range[0]);
             return;
         }
 
@@ -71,7 +74,6 @@ exports.run = function(fileInfo, transformer) {
             requireName = globalIdentifier.replace(/\./g,"/");
 
         if (!isGlobalRegistered(globals, requireName)) {
-            // todo requirename is camel case?
             globals.push({ varName: rightMostIdentifier, requireName: requireName });
         }
         if (rightMostIdentifier !== globalIdentifier) {
@@ -90,11 +92,15 @@ exports.run = function(fileInfo, transformer) {
         }
 
         if (node.type === "FunctionExpression" || node.type === "FunctionDeclaration") {
+            if (node.type === "FunctionDeclaration" && node.id) {
+                scope[scope.length - 1].push(node.id.name);
+            }
             inFunction++;
             scope.push([]);
             node.params.forEach(function(param) {
                 if (typeof param.name !== "string") {
-                    throw new Error("unrecognised parameter format");
+                    transformer.warn(fileInfo, "unrecognised parameter format - " + param.type, param.range[0]);
+                    return;
                 }
                 scope[scope.length - 1].push(param.name);
             });

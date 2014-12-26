@@ -5,6 +5,7 @@ var read = function(src) {
     return grunt.util.normalizelf(grunt.file.read(src));
 };
 var glob = require("glob");
+var logHelper = require("../src/log-helper");
 
 function stylize(str, style) {
     var styles = {
@@ -80,13 +81,33 @@ var compareFolders = function(test, assertedPath, actualPath) {
     });
 };
 
+function compareMessages(test, expected, actual) {
+    actual = actual.slice(0);
+    expected.forEach(function(expectedMsg) {
+        var filename = expectedMsg.split(":")[0],
+            msg = expectedMsg.split(":")[1];
+        for(var i = actual.length -1; i--; i >= 0) {
+            if (actual.fileInfo.subPath === filename && actual.msg === msg) {
+                actual.splice(i, 1);
+                return;
+            }
+        }
+        test.equals("", expectedMsg, "Log message not present");
+    });
+    actual.forEach(function(actualMsg) {
+        test.equals(actualMsg.fileInfo.subPath + ":" + actualMsg.msg, "", "Log message not expected");
+    });
+};
+
 module.exports = {
-    scenario: function(test, name) {
+    scenario: function(test, name, expectedWarnings) {
         var outputPath = path.resolve('.tmp/inputfiles/'+name+'/'),
             pathToProcess = path.resolve('test/inputfiles/'+name+'/'),
             pathToAssert = path.resolve('test/assertedfiles/'+name+'/');
 
-        ns2cjs.convert(pathToProcess, outputPath, function() {
+        ns2cjs.convert(pathToProcess, outputPath, function(logMessages) {
+            test.equals(0, logHelper.errors(logMessages).length, "No errors");
+            compareMessages(test, expectedWarnings || [], logHelper.warnings(logMessages));
             compareFolders(test, pathToAssert, outputPath);
         });
     }
