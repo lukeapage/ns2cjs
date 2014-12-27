@@ -1,7 +1,23 @@
-var ns2cjs = require("../src/ns2cjs");
+var commander = require("commander"),
+    ns2cjs = require("../src/ns2cjs"),
+    fs = require("fs"),
+    path = require("path");
 
-var argv = require('minimist')(process.argv.slice(2));
+var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
+var buildVersion = JSON.parse(packageConfig).version;
 
-ns2cjs.convert(argv._[0], ".tmp/simple/", function(logMessages) {
+commander
+    .version(buildVersion, '-v, --version')
+    .usage('[options] conversion-path')
+    .option('-l, --library', 'Library identifiers');
+
+commander.parse(process.argv);
+
+if (commander.args.length !== 1) {
+    commander.outputHelp();
+    return 1;
+}
+
+ns2cjs.convert(commander.args[0], ".tmp/simple/", function(logMessages) {
     console.dir(logMessages);
 });
