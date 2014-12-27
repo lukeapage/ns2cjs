@@ -11,7 +11,8 @@ var ensureDirectory = function (filepath, cb) {
 };
 
 module.exports = {
-    convert: function(inputpath, outputpath, finished) {
+    convert: function(inputpath, outputpath, finished, options) {
+        options = options || {};
         glob(path.join(inputpath, "**/*.js"), function(e, paths) {
             var files = [];
             paths.forEach(function(filepath) {
@@ -29,7 +30,7 @@ module.exports = {
 
         function onAllFilesRead(files) {
             var processed = 0;
-            var transformer = new Transformer(files);
+            var transformer = new Transformer(files, options);
             transformer.run();
 
             files.forEach(function(file) {

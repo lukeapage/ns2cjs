@@ -11,10 +11,11 @@ var esprima = require("esprima"),
  * @param {module:ns2cjs/file-info[]} files
  * @constructor
  */
-function Transformer(files) {
+function Transformer(files, options) {
     this._files = files;
     this._allClasses = [];
     this._log = [];
+    this._libraries = options.libraries || [];
 }
 
 Transformer.prototype.run = function() {
@@ -44,8 +45,7 @@ Transformer.prototype.getModuleClasses = function() {
 };
 
 Transformer.prototype.getLibraries = function() {
-    //TODO!
-    return ["jQuery"];
+    return this._libraries;
 };
 
 Transformer.prototype.info = function(fileInfo, msg, loc) {

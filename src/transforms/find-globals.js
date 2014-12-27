@@ -29,12 +29,19 @@ function isGlobalRegistered(globals, requireName) {
  */
 function findGlobalIndentifier(fullIdentifier, transformer) {
     var identifier;
-    [].concat(
-    transformer.getModuleClasses())
-        .concat(transformer.getLibraries())
+    transformer.getLibraries()
+        .forEach(function(library) {
+            if (fullIdentifier === library.id || (fullIdentifier.indexOf(library.id + ".") >= 0)) {
+                identifier = library;
+            }
+        });
+    if (identifier) {
+        return identifier;
+    }
+    transformer.getModuleClasses()
         .forEach(function(moduleClass) {
             if (fullIdentifier === moduleClass || (fullIdentifier.indexOf(moduleClass+".") >= 0 && (!identifier || identifier.length < moduleClass.length))) {
-                identifier = moduleClass;
+                identifier = { id: moduleClass, require: moduleClass.replace(/\./g, "/")};
             }
         });
     return identifier;
@@ -70,14 +77,14 @@ exports.run = function(fileInfo, transformer) {
         }
 
         //TODO is rightMostIdentifier unique?
-        var rightMostIdentifier = globalIdentifier.match(/[^\.]+$/i)[0],
-            requireName = globalIdentifier.replace(/\./g,"/");
+        var rightMostIdentifier = globalIdentifier.id.match(/[^\.]+$/i)[0],
+            requireName = globalIdentifier.require;
 
         if (!isGlobalRegistered(globals, requireName)) {
             globals.push({ varName: rightMostIdentifier, requireName: requireName });
         }
-        if (rightMostIdentifier !== globalIdentifier) {
-            codeFile.replace(node.range[0], node.range[0] + globalIdentifier.length, rightMostIdentifier);
+        if (rightMostIdentifier !== globalIdentifier.id) {
+            codeFile.replace(node.range[0], node.range[0] + globalIdentifier.id.length, rightMostIdentifier);
         }
     }
 

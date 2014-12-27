@@ -18,6 +18,8 @@ if (commander.args.length !== 1) {
     return 1;
 }
 
+var options = {};
+
 ns2cjs.convert(commander.args[0], ".tmp/simple/", function(logMessages) {
     console.dir(logMessages);
-});
+}, options);

@@ -2,7 +2,7 @@
  * @module root/FindsGlobals
  */
 
-var jQuery = require("jQuery"),
+var jQuery = require("jquery"),
     TestOne = require("root/TestOne"),
     Comments = require("root/Comments");
 

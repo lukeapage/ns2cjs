@@ -115,6 +115,6 @@ module.exports = {
             } else {
                 test.done();
             }
-        });
+        }, {libraries: [{ id: "jQuery", require: "jquery"}, { id: "$", require: "jquery"}]});
     }
 };
