@@ -1,7 +1,8 @@
 var commander = require("commander"),
     ns2cjs = require("../src/ns2cjs"),
     fs = require("fs"),
-    path = require("path");
+    path = require("path"),
+    logHelper = require("../src/log-helper");
 
 var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
 var buildVersion = JSON.parse(packageConfig).version;
@@ -9,7 +10,8 @@ var buildVersion = JSON.parse(packageConfig).version;
 commander
     .version(buildVersion, '-v, --version')
     .usage('[options] conversion-path')
-    .option('-l, --library', 'Library identifiers');
+    .option('-l, --libraries [id=requirepath,id=requirepath,...]', 'Library identifiers')
+    .option('-d, --dry-run', 'Do not output any files');
 
 commander.parse(process.argv);
 
@@ -18,8 +20,25 @@ if (commander.args.length !== 1) {
     return 1;
 }
 
-var options = {};
+var options = {
+    libraries: ("" || commander.libraries).split(",")
+        .map(function(library) {
+            var splitLibrary = library.split("="),
+                id,
+                require;
+            if (splitLibrary.length === 1) {
+                id = require = library;
+            } else {
+                id = splitLibrary[0];
+                require = splitLibrary[1];
+            }
+            return {id: id, require: require};
+        }),
+    dryRun: commander.dryRun
+};
 
 ns2cjs.convert(commander.args[0], ".tmp/simple/", function(logMessages) {
-    console.dir(logMessages);
+    logMessages.forEach(function(logMessage) {
+        console.log(logHelper.formatLogMessage(logMessage));
+    });
 }, options);

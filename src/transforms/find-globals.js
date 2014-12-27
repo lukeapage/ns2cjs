@@ -3,10 +3,13 @@
  */
 
 var astTraverse = require("../ast-traverse"),
-    astHelper = require("../ast-helper");
+    astHelper = require("../ast-helper"),
+    globallyDefined = ["require", "isNaN", "parseInt", "window", "document", "arguments",
+        "Array", "Object", "RegExp", "Date", "Number", "undefined", "Function", "String",
+        "isFinite", "Error", "String", "module", "exports", "parseFloat"];
 
 function isLocal(scopes, identifier) {
-    if (identifier === "require") {
+    if (globallyDefined.indexOf(identifier) >= 0) {
         return true;
     }
     return scopes.some(function(scope) {
@@ -127,6 +130,10 @@ exports.run = function(fileInfo, transformer) {
                 fContinue(node.object);
                 return;
             }
+            // ignore jsdon property identifiers
+        } else if (node.type === "Property" && node.key.type === "Identifier") {
+            fContinue(node.value);
+            return;
         } else if (node.type === "Identifier") {
             replaceGlobal(node);
             return;

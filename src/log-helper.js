@@ -14,3 +14,9 @@ exports.errors = function(logMessages) {
         return msg.type === "error";
     });
 };
+
+exports.formatLogMessage = function(logMessage) {
+    var output = "in : " + logMessage.fileInfo.subPath + "\n";
+    output += logMessage.msg + "\n";
+    return output;
+};

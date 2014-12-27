@@ -33,17 +33,21 @@ module.exports = {
             var transformer = new Transformer(files, options);
             transformer.run();
 
-            files.forEach(function(file) {
-                var outputFilePath = path.join(outputpath, file.subPath);
-                ensureDirectory(outputFilePath, function() {
-                    fs.writeFile(outputFilePath, file.codeFile.toString(), 'utf8', function() {
-                        processed++;
-                        if (processed === files.length) {
-                            finished(transformer.getLog());
-                        }
+            if (options.dryRun) {
+                finished(transformer.getLog());
+            } else {
+                files.forEach(function(file) {
+                    var outputFilePath = path.join(outputpath, file.subPath);
+                    ensureDirectory(outputFilePath, function() {
+                        fs.writeFile(outputFilePath, file.codeFile.toString(), 'utf8', function() {
+                            processed++;
+                            if (processed === files.length) {
+                                finished(transformer.getLog());
+                            }
+                        });
                     });
                 });
-            });
+            }
         }
     }
 };
