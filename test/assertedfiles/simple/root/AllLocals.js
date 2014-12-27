@@ -10,9 +10,13 @@ function AllLocals() {
         var test = jQuery.access();
     };
     func();
-    var a = {
-        emitr: true
+    try {
+        var a = {
+            emitr: true
         }, b = new Array(parseInt("2"));
+    } catch(oError) {
+        oError = "A Local Var";
+    }
 }
 
 module.exports = AllLocals;

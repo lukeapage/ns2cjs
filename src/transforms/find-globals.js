@@ -137,6 +137,11 @@ exports.run = function(fileInfo, transformer) {
         } else if (node.type === "Identifier") {
             replaceGlobal(node);
             return;
+        } else if (node.type === "CatchClause") {
+            scope[scope.length - 1].push(node.param.name);
+            fContinue(node.body);
+            scope[scope.length - 1].splice(scope[scope.length - 1].indexOf(node.param.name), 1);
+            return;
         } else if (node.type === "VariableDeclarator") {
             scope[scope.length - 1].push(node.id.name);
             if (node.init) {
