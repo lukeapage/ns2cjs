@@ -12,7 +12,7 @@ exports.run = function(fileInfo, transformer) {
         codeFile = fileInfo.codeFile,
         fileClass = fileInfo.getFileClass(),
         hasModuleComment = false,
-        moduleIdentifier = fileClass.replace(".", "/");
+        moduleIdentifier = fileClass.replace(/\./g, "/");
 
 
     ast.comments.forEach(function(comment) {
@@ -31,11 +31,13 @@ exports.run = function(fileInfo, transformer) {
             if (!moduleComment[1]) {
                 transformer.warn(fileInfo, "module comment found with non understandable identifier", comment.range[0]);
             } else {
-                if (moduleComment[1] !== moduleIdentifier) {
+                if (moduleComment[1].replace(/\./g, "/") !== moduleIdentifier) {
                     transformer.warn(fileInfo,
                         "module comment does not match expected - " + moduleComment[1] + " != " + moduleIdentifier,
                         comment.range[0]);
                 }
+                var start = moduleComment.index + 2 + comment.range[0];
+                codeFile.replace(start, start + moduleComment[0].length, "@module " + moduleIdentifier);
             }
             hasModuleComment = true;
         }

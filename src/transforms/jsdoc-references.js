@@ -46,6 +46,11 @@ exports.run = function(fileInfo, transformer) {
                 transformer.warn(fileInfo, "Class found in non jsdoc (commented out code?) - ignoring", comment.range[0]);
                 continue;
             }
+
+            if (comment.value.substr(0, nextMatch.index).match(/@module\s*$/)) {
+                continue;
+            }
+
             // add 1 because we can't look behind so are matching a character we don't want
             // add 2 because the comment range is the start of the comment e.g. before /*
             var matchIndex = nextMatch.index + 1 + 2 + comment.range[0],

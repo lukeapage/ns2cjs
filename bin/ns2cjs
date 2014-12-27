@@ -1,3 +1,7 @@
 var ns2cjs = require("../src/ns2cjs");
 
-ns2cjs.convert("test/inputfiles/simple/", ".tmp/simple/");
+var argv = require('minimist')(process.argv.slice(2));
+
+ns2cjs.convert(argv._[0], ".tmp/simple/", function(logMessages) {
+    console.dir(logMessages);
+});

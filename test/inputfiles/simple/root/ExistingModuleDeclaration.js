@@ -1,5 +1,5 @@
 /**
- * @module root/ExistingModuleDeclaration
+ * @module root.ExistingModuleDeclaration
  */
 
 root.ExistingModuleDeclaration = function() {
