@@ -179,18 +179,18 @@ exports.run = function(fileInfo, transformer) {
     if (globals.length) {
         var globalVar;
         if (globalVarDeclarationContinuePosition) {
-            globalVar = ",\n    ";
+            globalVar = "," + codeFile.newline + "\t";
         } else {
             globalVar = "var ";
         }
         for(var i = 0; i < globals.length; i++) {
             if (i !== 0) {
-                globalVar += ",\n    ";
+                globalVar += "," + codeFile.newline + "\t";
             }
             globalVar += globals[i].varName + " = require(\"" + globals[i].requireName + "\")";
         }
         if (!globalVarDeclarationContinuePosition) {
-            globalVar += ";\n\n";
+            globalVar += ";" + codeFile.newline + codeFile.newline;
         }
         codeFile.insert(globalVarDeclarationContinuePosition || 0, globalVar);
     }

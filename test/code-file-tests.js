@@ -35,45 +35,45 @@ function thenTheOutputIs(test, assertedText) {
 exports.codefile = {
     simple: function(test) {
         givenACodeFile(withTheText("test"));
-        thenTheOutputIs(test, "test");
+        thenTheOutputIs(test, "test\n");
         test.done();
     },
     replacing: function(test) {
         givenACodeFile(withTheText("test"));
         whenReplacing(0, 1, "w");
-        thenTheOutputIs(test, "west");
+        thenTheOutputIs(test, "west\n");
         test.done();
     },
     inserting: function(test) {
         givenACodeFile(withTheText("test"));
         whenInserting(0, "_");
-        thenTheOutputIs(test, "_test");
+        thenTheOutputIs(test, "_test\n");
         test.done();
     },
     deleting: function(test) {
         givenACodeFile(withTheText("test"));
         whenDeleting(1, 2);
-        thenTheOutputIs(test, "tst");
+        thenTheOutputIs(test, "tst\n");
         test.done();
     },
     appending: function(test) {
         givenACodeFile(withTheText("test"));
         whenAppending("ing");
-        thenTheOutputIs(test, "testing");
+        thenTheOutputIs(test, "testing\n");
         test.done();
     },
     insertingAndReplacingSamePlace: function(test) {
         givenACodeFile(withTheText("test"));
         whenReplacing(0, 1, "");
         whenInserting(0, "w");
-        thenTheOutputIs(test, "west");
+        thenTheOutputIs(test, "west\n");
         test.done();
     },
     insertingAndReplacingSamePlaceReversed: function(test) {
         givenACodeFile(withTheText("test"));
         whenInserting(0, "w");
         whenReplacing(0, 1, "");
-        thenTheOutputIs(test, "west");
+        thenTheOutputIs(test, "west\n");
         test.done();
     },
     everything: function(test) {
@@ -82,7 +82,7 @@ exports.codefile = {
         whenReplacing(0, 1, "");
         whenAppending(" of here");
         whenDeleting(4, 5);
-        thenTheOutputIs(test, "west of here");
+        thenTheOutputIs(test, "west of here\n");
         test.done();
     }
 

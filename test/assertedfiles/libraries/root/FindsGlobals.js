@@ -3,7 +3,7 @@
  */
 
 var $ = require("jquery"),
-    root = require("root/renamed");
+	root = require("root/renamed");
 
 function FindsGlobals() {
 	var $v = $.find(".class"),

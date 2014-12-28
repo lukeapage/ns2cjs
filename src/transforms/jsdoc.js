@@ -50,6 +50,7 @@ exports.run = function(fileInfo, transformer) {
     });
 
     if (!hasModuleComment) {
-        codeFile.insert(0, "/**\n * @module " + moduleIdentifier + "\n */\n\n");
+        codeFile.insert(0, "/**" + codeFile.newline + " * @module " + moduleIdentifier + "" + 
+	        codeFile.newline + " */" + codeFile.newline + codeFile.newline);
     }
 };

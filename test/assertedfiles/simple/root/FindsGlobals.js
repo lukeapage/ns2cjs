@@ -3,8 +3,8 @@
  */
 
 var jQuery = require("jQuery"),
-    TestOne = require("root/TestOne"),
-    Comments = require("root/Comments");
+	TestOne = require("root/TestOne"),
+	Comments = require("root/Comments");
 
 function FindsGlobals(local) {
     jQuery("hi").push(new TestOne(Comments));

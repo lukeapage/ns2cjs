@@ -61,6 +61,6 @@ exports.run = function(fileInfo, transformer) {
     });
 
 	if (!fileInfo.pattern.hasModuleExports) {
-        codeFile.append("\nmodule.exports = " + className + ";\n");
+        codeFile.append(codeFile.newline + "module.exports = " + className + ";" + codeFile.newline);
 	}
 };

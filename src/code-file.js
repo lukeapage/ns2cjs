@@ -11,6 +11,11 @@
  */
 function CodeFile(input) {
     this._input = input;
+	this.newline = "\n";
+	if (input.match(/\r\n/)) {
+		this.newline = "\r\n";
+	}
+	this.newlineRegex = this.newline.replace(/\n/g, "\\n").replace(/\r/g, "\\r");
     this._replacements = [];
 }
 
@@ -81,6 +86,12 @@ CodeFile.prototype.toString = function() {
                 after = transformed.slice(replacement.end, transformed.length);
             transformed = before + replacement.value + after;
         });
+	var removeDupeLinesRegex = new RegExp(this.newlineRegex + this.newlineRegex + "(" + this.newlineRegex + ")+", "g");
+	transformed = transformed.replace(removeDupeLinesRegex, this.newline + this.newline);
+	var removeLeadingNewLine = new RegExp("^" + this.newlineRegex + "+");
+	transformed = transformed.replace(removeLeadingNewLine, "");
+	var endOfFileNewLine = new RegExp(this.newlineRegex + "*$");
+	transformed = transformed.replace(endOfFileNewLine, this.newline);
     return transformed;
 };
 

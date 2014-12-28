@@ -23,6 +23,6 @@ exports.run = function(fileInfo, transformer) {
 		codeFile.delete(finalNsDecl.range[0], finalNsDecl.range[1]);
 	}
 	if (!fileInfo.pattern.hasModuleExports) {
-		codeFile.append("\nmodule.exports = " + className + ";\n");
+		codeFile.append(codeFile.newline + "module.exports = " + className + ";" + codeFile.newline);
 	}
 };

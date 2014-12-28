@@ -3,7 +3,7 @@
  */
 
 var jQuery = require("jquery"),
-    Comments = require("root/Comments");
+	Comments = require("root/Comments");
 
 function ExistingGlobalVar() {
     jQuery.find(".classes");

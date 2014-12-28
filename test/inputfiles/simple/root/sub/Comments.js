@@ -20,3 +20,6 @@ root.sub.Comments.prototype.getTestOne = function(nsType) {
  */
 root.sub.Comments.prototype.convertsMultiple = function(one, two, three) {
 };
+
+// TODO: delete this line once module is converted to commonjs
+//module.exports = I don't know yet
