@@ -84,6 +84,30 @@ exports.codefile = {
         whenDeleting(4, 5);
         thenTheOutputIs(test, "west of here\n");
         test.done();
-    }
-
+    },
+	detectWindowsNewLines: function(test) {
+		givenACodeFile(withTheText("\r\n\r\ntesty\r\n\r\n\r\nsecond-line"));
+		thenTheOutputIs(test, "testy\r\n\r\nsecond-line\r\n");
+		test.done();
+	},
+	tidyUpMultipleLines: function(test) {
+		givenACodeFile(withTheText("one\n\n\n\n\n\n\ntwo\n\n\nthree\n"));
+		thenTheOutputIs(test, "one\n\ntwo\n\nthree\n");
+		test.done();
+	},
+	tidyUpLeadineNewLines: function(test) {
+		givenACodeFile(withTheText("\n\none\n"));
+		thenTheOutputIs(test, "one\n");
+		test.done();
+	},
+	dontTouchLastNewLine: function(test) {
+		givenACodeFile(withTheText("one\n"));
+		thenTheOutputIs(test, "one\n");
+		test.done();
+	},
+	tidyUpNewLinesAtEOF: function(test) {
+		givenACodeFile(withTheText("one\n\n\n\n"));
+		thenTheOutputIs(test, "one\n");
+		test.done();
+	}
 };

@@ -88,9 +88,9 @@ CodeFile.prototype.toString = function() {
         });
 	var removeDupeLinesRegex = new RegExp(this.newlineRegex + this.newlineRegex + "(" + this.newlineRegex + ")+", "g");
 	transformed = transformed.replace(removeDupeLinesRegex, this.newline + this.newline);
-	var removeLeadingNewLine = new RegExp("^" + this.newlineRegex + "+");
+	var removeLeadingNewLine = new RegExp("^(" + this.newlineRegex + ")+");
 	transformed = transformed.replace(removeLeadingNewLine, "");
-	var endOfFileNewLine = new RegExp(this.newlineRegex + "*$");
+	var endOfFileNewLine = new RegExp("(" + this.newlineRegex + ")*$");
 	transformed = transformed.replace(endOfFileNewLine, this.newline);
     return transformed;
 };

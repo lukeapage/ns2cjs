@@ -1,3 +1,2 @@
 exports.staticFunc = function() {
 };
-
