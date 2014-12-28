@@ -10,6 +10,7 @@ function Comments() {
 }
 
 /**
+ * {@see module:root/sub/Comments#convertsMultiple]
  * @param {root.nsType} nsType A parameter defined elsewhere and not yet converted to module syntax
  * @returns {module:root/TestOne}
  */
