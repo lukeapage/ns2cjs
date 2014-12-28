@@ -13,6 +13,7 @@ commander
     .option('-l, --libraries [id=requirepath,id=requirepath,...]', 'Library identifiers')
     .option('-d, --dry-run', 'Do not output any files')
 	.option('-i, --ignored-globals [id,id,..]', 'Ignored globals (do not output a warning)')
+	.option('-r, --referenced-modules [dir,dir,..]', 'Commonjs modules to convert');
 
 commander.parse(process.argv);
 
@@ -40,6 +41,7 @@ var options = {
             return {id: id, localId: localId, require: require};
         }),
 	ignoredGlobals: ("" || commander.ignoredGlobals).split(","),
+	referencedModules: ("" || commander.referencedModules).split(","),
     dryRun: commander.dryRun
 };
 

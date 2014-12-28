@@ -41,6 +41,12 @@ exports.run = function(fileInfo, transformer) {
             }
             hasModuleComment = true;
         }
+	    
+	    if (!isJsDoc && comment.value.match(/module\.exports =/)) {
+		    codeFile.delete(comment.range[0] - 2, comment.range[1]);
+		} else if (!isJsDoc && comment.value.match(/TODO.*delete.*commonjs/i)) {
+		    codeFile.delete(comment.range[0] - 2, comment.range[1]);
+	    }
     });
 
     if (!hasModuleComment) {

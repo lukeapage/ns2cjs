@@ -60,5 +60,7 @@ exports.run = function(fileInfo, transformer) {
         fContinue(node);
     });
 
-    codeFile.append("\nmodule.exports = " + className + ";\n");
+	if (!fileInfo.pattern.hasModuleExports) {
+        codeFile.append("\nmodule.exports = " + className + ";\n");
+	}
 };

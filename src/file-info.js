@@ -11,9 +11,6 @@
  * @constructor
  */
 function FileInfo(fullpath, subPath, contents) {
-    if (typeof contents !== "string") {
-        throw new Error("Expected string as paramter to FileInfo");
-    }
     this.fullpath = fullpath;
     this.subPath = subPath;
     this.contents = contents;

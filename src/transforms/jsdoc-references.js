@@ -56,7 +56,7 @@ exports.run = function(fileInfo, transformer) {
             var matchIndex = nextMatch.index + 1 + 2 + comment.range[0],
                 fullClassName = nextMatch[1];
 
-            codeFile.replace(matchIndex, matchIndex + fullClassName.length, "module:" + fullClassName.replace(".", "/"));
+            codeFile.replace(matchIndex, matchIndex + fullClassName.length, "module:" + fullClassName.replace(/\./g, "/"));
         }
     });
 };

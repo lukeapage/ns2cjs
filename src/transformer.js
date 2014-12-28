@@ -17,11 +17,16 @@ function Transformer(files, options) {
     this._log = [];
     this._libraries = options.libraries || [];
 	this._ignoredGlobals = options.ignoredGlobals || [];
+	this._referencedFiles = options.referencedFiles || [];
 }
 
 Transformer.prototype.run = function() {
     var filePatternAnalyser = require("./transforms/file-pattern-analyser"),
         transformer = this;
+
+	this._referencedFiles.forEach(function(referencedFile) {
+		transformer._allClasses.push(referencedFile.getFileClass());
+	});
 
     this._files.forEach(function(file) {
         file.ast = esprima.parse(file.contents, {

@@ -139,7 +139,8 @@ exports.run = function(fileInfo, transformer) {
 	    removeFinalNsDecl = require('./remove-final-ns-decl'),
         transforms = [findGlobals, jsDocReferences],
         patternInfo = {
-            transforms: transforms
+            transforms: transforms,
+	        hasModuleExports: hasModuleExports
         };
 
     if (singletonAssignmentNode) {
