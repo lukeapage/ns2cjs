@@ -43,7 +43,7 @@ var options = {
     dryRun: commander.dryRun
 };
 
-ns2cjs.convert(commander.args[0], ".tmp/simple/", function(logMessages) {
+ns2cjs.convert(commander.args[0], commander.args[0], function(logMessages) {
     logMessages.forEach(function(logMessage) {
         console.log(logHelper.formatLogMessage(logMessage));
     });

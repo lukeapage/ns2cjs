@@ -136,6 +136,7 @@ exports.run = function(fileInfo, transformer) {
         jsDocReferences = require("./jsdoc-references"),
         nstocjs = require("./nstocjs"),
         nsStatic = require("./ns-static"),
+	    removeFinalNsDecl = require('./remove-final-ns-decl'),
         transforms = [findGlobals, jsDocReferences],
         patternInfo = {
             transforms: transforms
@@ -159,8 +160,12 @@ exports.run = function(fileInfo, transformer) {
         patternInfo.constructorNode = constructorAssignment || constructorNode;
 	    patternInfo.extraGlobals = [{varName: "exports", requireName: (fileClass + ".prototype").replace(/\./g,"/"), doNotRequire: true}];
         transforms.splice(0, 0, nsStatic);
+    } else if (declaredFunc) {
+	    patternInfo.extraGlobals = [{varName: declaredFunc, requireName: fileClass.replace(/\./g,"/"), doNotRequire: true}];
+	    patternInfo.finalNsDecl = constructorAssignment;
+	    transforms.splice(0, 0, removeFinalNsDecl, jsDoc);
     } else {
-	    patternInfo.extraGlobals = [{varName: declaredFunc || className, requireName: fileClass.replace(/\./g,"/"), doNotRequire: true}];
+	    patternInfo.extraGlobals = [{varName: className, requireName: fileClass.replace(/\./g,"/"), doNotRequire: true}];
         transforms.splice(0, 0, nstocjs, jsDoc);
     }
 
