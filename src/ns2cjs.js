@@ -15,6 +15,9 @@ module.exports = {
         options = options || {};
         glob(path.join(inputpath, "**/*.js"), function(e, paths) {
             var files = [];
+	        paths = paths.filter(function(filepath) {
+		        return !filepath.match(/\.html\.js$/);
+	        });
             paths.forEach(function(filepath) {
                 var subPath = path.relative(inputpath, filepath);
                 fs.readFile(filepath, 'utf8', function(err, inputFile) {

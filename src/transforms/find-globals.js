@@ -8,21 +8,30 @@ var astTraverse = require("../ast-traverse"),
         "Array", "Object", "RegExp", "Date", "Number", "undefined", "Function", "String",
         "isFinite", "Error", "String", "module", "exports", "parseFloat"];
 
-function isLocal(scopes, identifier) {
-    if (globallyDefined.indexOf(identifier) >= 0) {
-        return true;
-    }
-    return scopes.some(function(scope) {
-        if (scope.indexOf(identifier) >= 0) {
-            return true;
+function isGlobalRegistered(globals, requireName) {
+	var globalReference = null;
+    globals.some(function(global) {
+	    var isMatch = global.requireName === requireName;
+        if (isMatch) {
+	        globalReference = global;
         }
+	    return isMatch;
     });
+	return globalReference;
 }
 
-function isGlobalRegistered(globals, requireName) {
-    return globals.some(function(global) {
-        return global.requireName === requireName;
-    });
+function isLocal(scopes, transformer, identifier) {
+	if (globallyDefined.indexOf(identifier) >= 0) {
+		return true;
+	}
+	if (transformer.getIgnoredGlobals().indexOf(identifier) >= 0) {
+		return true;
+	}
+	return scopes.some(function(scope) {
+		if (scope.indexOf(identifier) >= 0) {
+			return true;
+		}
+	});
 }
 
 /**
@@ -60,7 +69,7 @@ exports.run = function(fileInfo, transformer) {
     var ast = fileInfo.ast,
         codeFile = fileInfo.codeFile,
         inFunction = 0,
-        globals = [],
+        globals = (fileInfo.pattern.extraGlobals || []).slice(0),
         scope = [[]],
         firstFunctionHit = false,
         globalVarDeclarationContinuePosition;
@@ -69,9 +78,13 @@ exports.run = function(fileInfo, transformer) {
         var fullText = astHelper.astToString(node),
             leftMostIndentifier = fullText.match(/^[^\.]+/i)[0];
 
-        if (isLocal(scope, leftMostIndentifier)) {
+        if (isLocal(scope, transformer, leftMostIndentifier)) {
             return;
         }
+	    
+	    if (fullText === fileInfo.getFileClass() && fileInfo.pattern.type === "NamespacedClass") {
+		    return;
+	    }
 
         var globalIdentifier = findGlobalIndentifier(fullText, transformer);
         if (!globalIdentifier) {
@@ -80,14 +93,15 @@ exports.run = function(fileInfo, transformer) {
         }
 
         //TODO is rightMostIdentifier unique?
-        var rightMostIdentifier = globalIdentifier.id.match(/[^\.]+$/i)[0],
-            requireName = globalIdentifier.require;
+        var requireName = globalIdentifier.require,
+	        alreadyRegistered = isGlobalRegistered(globals, requireName)
+	        localIdentifier = alreadyRegistered ? alreadyRegistered.varName : (globalIdentifier.localId || globalIdentifier.id.match(/[^\.]+$/i)[0]);
 
-        if (!isGlobalRegistered(globals, requireName)) {
-            globals.push({ varName: rightMostIdentifier, requireName: requireName });
+        if (!alreadyRegistered) {
+            globals.push({ varName: localIdentifier, requireName: requireName });
         }
-        if (rightMostIdentifier !== globalIdentifier.id) {
-            codeFile.replace(node.range[0], node.range[0] + globalIdentifier.id.length, rightMostIdentifier);
+        if (localIdentifier !== globalIdentifier.id) {
+            codeFile.replace(node.range[0], node.range[0] + globalIdentifier.id.length, localIdentifier);
         }
     }
 
@@ -157,7 +171,11 @@ exports.run = function(fileInfo, transformer) {
         }
         fContinue(node);
     });
-
+	
+	globals = globals.filter(function(global) {
+		return !global.doNotRequire;
+	});
+	
     if (globals.length) {
         var globalVar;
         if (globalVarDeclarationContinuePosition) {

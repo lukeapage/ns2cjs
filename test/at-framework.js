@@ -102,7 +102,7 @@ function compareMessages(test, expected, actual) {
 };
 
 module.exports = {
-    scenario: function(test, name, expectedWarnings) {
+    scenario: function(test, name, options, expectedWarnings) {
         var outputPath = path.resolve('.tmp/inputfiles/'+name+'/'),
             pathToProcess = path.resolve('test/inputfiles/'+name+'/'),
             pathToAssert = path.resolve('test/assertedfiles/'+name+'/');
@@ -115,6 +115,6 @@ module.exports = {
             } else {
                 test.done();
             }
-        }, {libraries: [{ id: "jQuery", require: "jquery"}, { id: "$", require: "jquery"}]});
+        }, options);
     }
 };

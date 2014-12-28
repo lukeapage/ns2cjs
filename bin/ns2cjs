@@ -11,7 +11,8 @@ commander
     .version(buildVersion, '-v, --version')
     .usage('[options] conversion-path')
     .option('-l, --libraries [id=requirepath,id=requirepath,...]', 'Library identifiers')
-    .option('-d, --dry-run', 'Do not output any files');
+    .option('-d, --dry-run', 'Do not output any files')
+	.option('-i, --ignored-globals [id,id,..]', 'Ignored globals (do not output a warning)')
 
 commander.parse(process.argv);
 
@@ -25,15 +26,20 @@ var options = {
         .map(function(library) {
             var splitLibrary = library.split("="),
                 id,
-                require;
+                require,
+	            localId,
+	            splitId = splitLibrary[0].split(":");
+
             if (splitLibrary.length === 1) {
-                id = require = library;
+                id = require = splitId[0];
             } else {
-                id = splitLibrary[0];
+                id = splitId[0];
                 require = splitLibrary[1];
             }
-            return {id: id, require: require};
+		    localId = splitId.length > 1 ? splitId[1] : id;
+            return {id: id, localId: localId, require: require};
         }),
+	ignoredGlobals: ("" || commander.ignoredGlobals).split(","),
     dryRun: commander.dryRun
 };
 

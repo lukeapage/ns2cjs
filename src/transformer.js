@@ -16,6 +16,7 @@ function Transformer(files, options) {
     this._allClasses = [];
     this._log = [];
     this._libraries = options.libraries || [];
+	this._ignoredGlobals = options.ignoredGlobals || [];
 }
 
 Transformer.prototype.run = function() {
@@ -46,6 +47,10 @@ Transformer.prototype.getModuleClasses = function() {
 
 Transformer.prototype.getLibraries = function() {
     return this._libraries;
+};
+
+Transformer.prototype.getIgnoredGlobals = function() {
+	return this._ignoredGlobals;
 };
 
 Transformer.prototype.info = function(fileInfo, msg, loc) {

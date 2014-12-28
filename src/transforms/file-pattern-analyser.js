@@ -157,8 +157,10 @@ exports.run = function(fileInfo, transformer) {
         }
         patternInfo.singletonAssignmentNode = singletonAssignmentNode;
         patternInfo.constructorNode = constructorAssignment || constructorNode;
+	    patternInfo.extraGlobals = [{varName: "exports", requireName: (fileClass + ".prototype").replace(/\./g,"/"), doNotRequire: true}];
         transforms.splice(0, 0, nsStatic);
     } else {
+	    patternInfo.extraGlobals = [{varName: declaredFunc || className, requireName: fileClass.replace(/\./g,"/"), doNotRequire: true}];
         transforms.splice(0, 0, nstocjs, jsDoc);
     }
 
